@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Шифр RSA</title>
+<!--<link rel="stylesheet" href="styles.css">-->
+</head>
+<body>
+<script src="BigInteger.js"> </script>
+<script>
+let characters = ['#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л',
+'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ',
+'Ь', 'Ы', 'Ъ', 'Э', 'Ю', 'Я', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+function encrypt() {
+const p = parseInt(document.getElementById('pValue').value);
+const q = parseInt(document.getElementById('qValue').value);
+
+if (isPrime(p) && isPrime(q)) {
+const s = document.getElementById('text').value.toUpperCase();
+const n = p * q;
+const m = (p - 1) * (q - 1);
+const d = calculate_d(m);
+const e_ = calculate_e(d, m);
+
+const result = rsaEncode(s, e_, n);
+
+document.getElementById('dValue').value = d.toString();
+document.getElementById('nValue').value = n.toString();
+
+document.getElementById('output').innerText = result.join('\n');
+} else {
+alert('p или q - не простые числа!');
+}
+}
+
+function decrypt() {
+const d = parseInt(document.getElementById('dValue').value);
+const n = parseInt(document.getElementById('nValue').value);
+
+if (d && n) {
+const input = document.getElementById('text').value.split('\n');
+
+const result = rsaDecode(input, d, n);
+
+document.getElementById('output').innerText = result;
+} else {
+alert('Введите секретный ключ!');
+}
+}
+
+function isPrime(n) {
+    if(n <= 1) {
+        return false;
+    }
+    for(let i = 2; i <= Math.sqrt(n); i++) {
+        if(n % i === 0) {
+            return false;
+        }
+    }
+    return true;
+   
+}
+
+function rsaEncode(s, e, n) {
+const result = [];
+
+for (let i = 0; i < s.length; i++) {
+const index = characters.indexOf(s[i]);
+const bi = bigInt(index).pow(e);
+const n_ = bigInt(n);
+const biMod = bi.mod(n_);
+
+result.push(biMod.toString());
+}
+
+return result;
+}
+
+
+/*
+
+function rsaEncode(s, e, n) {
+const result = [];
+
+for (let i = 0; i < s.length; i++) {
+const index = characters.indexOf(s[i]);
+const bi = bigInt(index).pow(e);
+const n_ = bigInt(n);
+const biMod = bi.mod(n_);
+
+result.push(biMod.toString());
+console.log(biMod.toString());
+}
+
+return result;
+}*/
+
+/*
+function rsaDecode(input, d, n) {
+let result = "";
+let bi;
+
+for (let item of input) {
+if (item.trim() !== "") { // Add this line to remove empty strings
+bi = bigInt(item);
+bi = bi.pow(d);
+
+let n_ = bigInt(n);
+
+bi = bi.mod(n_);
+
+let index = bi.toJSNumber();
+
+result += characters[index];
+}
+return result;
+}
+}*/
+
+
+
+/*
+
+function rsaDecode(input, d, n) {
+let result = '';
+const characters = ['#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л',
+'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ',
+'Ь', 'Ы', 'Ъ', 'Э', 'Ю', 'Я', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+for (let i = 0; i < input.length; i++) {
+const decrypted = bigInt(input[i]).pow(d).mod(n);
+const index = decrypted.toJSNumber();
+result += characters[index];
+}
+
+return result;
+}*/
+
+function rsaDecode(input, d, n) {
+let result = '';
+
+input.forEach((item) => {
+const bi = bigInt(parseFloat(item));
+const biPow = bi.pow(d);
+const n_ = bigInt(n);
+const biMod = biPow.mod(n_);
+const index = parseInt(biMod.toString());
+
+result += characters[index].toString();
+});
+
+return result;
+}
+/*
+function rsaDecode(input, d, n) {
+let result = '';
+
+input.forEach((item) => {
+const bi = bigInt(parseFloat(item));
+const biPow = bi.pow(d);
+const n_ = bigInt(n);
+const biMod = biPow.mod(n_);
+const index = parseInt(biMod.toString());
+
+result += characters[index];
+});
+
+return result;
+}*/
+
+/*
+function rsaDecode(input, d, n) {
+let result = "";
+let bi;
+
+for (let item of input) {
+bi = bigInt(item);
+bi = bi.pow(d);
+
+let n_ = bigInt(n);
+
+bi = bi.mod(n_);
+
+let index = bi.toJSNumber();
+
+result += characters[index];
+}
+
+return result;
+}
+*/
+function calculate_d(m) {
+let d = m - 1;
+
+for (let i = 2; i <= m; i++) {
+if (m % i === 0 && d % i === 0) {
+d--;
+i = 1;
+}
+}
+
+return d;
+}
+
+
+function calculate_e(d, m) {
+let e = 10;
+
+while(true) {
+if((e * d) % m === 1 ) {
+break;
+} else {
+e++;
+}
+}
+return e;
+}
+
+</script>
+
+<div class="textInp" >
+<label for="text">Введите текст, который вы хотите зашифровать/расшифровать:</label>
+
+<textarea rows="8" cols="60" id="text"></textarea>
+</div>
+
+<div class="valueS" >
+<label for="pValue">Введите значение p:</label>
+
+<input type="text" id="pValue">
+</div>
+
+<div class="valueS" >
+<label for="qValue">Введите значение q:</label>
+
+<input type="text" id="qValue">
+</div>
+
+<button onclick="encrypt()">Зашифровать</button>
+
+<div class="valueS" >
+<label for="dValue">Введите значение d:</label>
+
+<input type="text" id="dValue">
+</div>
+
+<div class="valueS" >
+<label for="nValue">Введите значение n:</label>
+<input type="text" id="nValue">
+</div>
+
+<button onclick="decrypt()">Расшифровать</button>
+
+<div class="textOut" >
+<label for="output">Результат:</label>
+
+<textarea rows="8" cols="60" id="output"></textarea>
+</div>
+</body>
+</html>
+
+
+
+// первый вариант
+function encrypt() {
+    const p = parseInt(document.getElementById('p').value);
+    const q = parseInt(document.getElementById('q').value);
+    
+    if (isTheNumberSimple(p) && isTheNumberSimple(q)) {
+    const s = document.getElementById('text').value.toUpperCase();
+    const n = p * q;
+    const m = (p - 1) * (q - 1);
+    const d = calculate_d(m);
+    const e_ = calculate_e(d, m);
+    
+    const result = RSA_Encode(s, e_, n);
+    
+    document.getElementById('d').value = d.toString();
+    document.getElementById('n').value = n.toString();
+    
+    document.getElementById('output').innerText = result.join('\n');
+    } else {
+    alert('p или q - не простые числа!');
+    }
+    }
+    
+    function decrypt() {
+    const d = parseInt(document.getElementById('d').value);
+    const n = parseInt(document.getElementById('n').value);
+    
+    if (d && n) {
+    const input = document.getElementById('output').value.split('\n');
+    
+    const result = RSA_Decode(input, d, n);
+    
+    document.getElementById('output').innerText = result;
+    } else {
+    alert('Введите секретный ключ!');
+    }
+    }
+    
+    function isTheNumberSimple(n) {
+    if (n < 2) return false;
+    if (n === 2) return true;
+    
+    for (let i = 2; i < n; i++) {
+    if (n % i === 0) return false;
+    }
+    
+    return true;
+    }
+    
+    function rsaEncode(s, e, n) {
+    const result = [];
+    
+    for (let i = 0; i < s.length; i++) {
+    const index = characters.indexOf(s[i].charCodeAt(0));
+    const bi = bigInt(index).pow(e);
+    const n_ = bigInt(n);
+    const biMod = bi.mod(n_);
+    
+    result.push(biMod.toString());
+    }
+    
+    return result;
+    }
+    
+    function rsaDecode(input, d, n) {
+    let result = '';
+    
+    input.forEach((item) => {
+    const bi = bigInt(parseFloat(item));
+    const biPow = bi.pow(d);
+    const n_ = bigInt(n);
+    const biMod = biPow.mod(n_);
+    const index = parseInt(biMod.toString());
+    
+    result += characters[index].toString();
+    });
+    
+    return result;
+    }
+    
+    function calculate_d(m) {
+    let d = m - 1;
+    
+    for (let i = 2; i <= m; i++) {
+    if (m % i === 0 && d % i === 0) {
+    d--;
+    i = 1;
+    }
+    }
+    
+    return d;
+    }
+    
+    function calculate_e(d, m) {
+    let e = 10;
+    let found = false;
+    while(!found) {
+      if((e * d) % m === 1 ) {
+        found = true;
+      } else {
+           e++;
+        }
+      }
+      return e;
+    }
+    
+            </script>
+    
+                <div class="text" >
+                    <label for="inputText">Введите текст, который вы хотите зашифровать/расшифровать:</label><br>
+                    <textarea rows="8" cols="60" id="text"></textarea>
+                </div>
+    
+                <div class="" >
+                    <label for="p">Введите значение p:</label><br>
+                    <input type="text" id="p">
+                </div>
+    
+                <div class="" >
+                    <label for="q">Введите значение q:</label><br>
+                    <input type="text" id="q">
+                </div>
+    
+                <button onclick="encrypt()">Зашифровать</button>
+    
+                <div class="" >
+                    <label for="d">Введите значение d:</label><br>
+                    <input type="text" id="d">
+                </div>
+    
+                <div class="" >
+                    <label for="n">Введите значение n:</label><br>
+                    <input type="text" id="n">
+                </div>
+    
+                <button onclick="decrypt()">Расшифровать</button>
+    
+                <div class="textOut" >
+                    <label for="output">Результат:</label><br>
+                    <textarea rows="8" cols="60" id="output"></textarea>
+                </div>
+        </body>
+    </html>

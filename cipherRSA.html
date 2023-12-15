@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Шифр RSA</title>
+    </head>
+    <body>
+        <script src="BigInteger.js"> </script>
+        <script src="script.js"> </script>
+        
+            <div>
+                <label for="P" >Введите значение p:</label>
+                <input   type="number"  id="p"  min="10" max="100">
+            </div>
+
+            <div>
+                <label for="q" >Введите значение q:</label>
+                <input type="number"  id="q"  min="10" max="100" >
+            </div>
+
+            <div>
+                <div>
+                <button  onclick="generate()">Сгенерировать:</button>
+                </div>
+    
+                <div>
+                    <label for="n" >Значение N:</label>
+                    <input  type="number" id="n"  readonly="true">
+                </div>
+    
+                <div>
+                    <label for="phi" >Значение Phi(N):</label>  
+                    <input  type="number" id="phi"  readonly="true">
+                </div>
+    
+                <div >
+                    <label for="e" class="col-form-label px-2">Значение E:</label>
+                    <input  type="number" id="e"  readonly="true">
+                </div>
+              
+                <div>
+                    <label for="d" > Значение D:</label>
+                    <input type="number" id="d"  readonly="true" >
+                </div>
+              
+                <div >
+                    <label for="pub">Пара открытытых ключей:</label>
+                    <input  id="pub"  readonly="true">
+                </div>
+    
+               <div >
+                    <label for="pri">Пара закрытытых ключей:</label>
+                    <input  id="pri" readonly="true" >
+               </div>
+    
+               <div>
+                    <h2>Зашифрованный текст</h2>
+               </div>
+    
+               <div>
+                    <label for="ins">Введите текст, который хотите зашифровать:</label>
+                    <input  id="ins">
+               </div>
+    
+               <div>
+                    <button  onclick="enc()">Зашифровать</button>
+               </div>
+    
+               <div>
+                    <label for="en">Зашифрованый текст:</label>
+                    <input  id="en" readonly="true">
+              </div>
+    
+               <div >
+                    <h2>Расшифрованный текст</h2>
+               </div>
+    
+               <div>
+                    <label for="ind">Введите текст, который хотите расшифровать:</label>
+                    <input id="ind">
+              </div>
+    
+               <div >
+                    <button onclick="dec()">Расшифровать</button>
+               </div>
+    
+              <div> 
+                    <label for="de">Расшифрованный текст:</label>
+                    <input id="de" readonly="true">
+            </div>
+      </div>
+    </body>
+</html>
+
+          
